@@ -1,0 +1,66 @@
+#!/bin/python3
+import configparser
+import argparse
+from argparse import RawTextHelpFormatter
+import os
+import io
+
+EXIT_NO_CONFIG=1
+DEFAULT_SNOWSQL_CONFIG=os.path.expanduser("~/.snowsql/config")
+
+arguments_parser = argparse.ArgumentParser(description="Mobilize.Net SnowTire. This is fork of the original SnowTire, to provide a Quick Jump to using SnowFlake for DataScience",formatter_class=RawTextHelpFormatter)
+arguments_parser.add_argument('--config',help='Specifies the location for the SnowSQL configuration file')
+arguments_parser.add_argument('-a','--accountname', help='Specifies your account identifier.')
+arguments_parser.add_argument('-u','--username', help='Specifies the login name of the user with whom you connect to the specified account.')
+arguments_parser.add_argument('-d' ,'--dbname', help='Specifies the database to use')
+arguments_parser.add_argument('-s' ,'--schemaname', help='Specifies the database schema to use')
+arguments_parser.add_argument('-r','--rolename', help='Specifies the role to use')
+arguments_parser.add_argument('-w','--warehouse', help='Specifies the virtual warehouse to use ')
+arguments_parser.add_argument('-c','--connection', help='Specifies a connection to use, where the specified string is the name of a connection defined in the SnowSQL configuration file')
+
+
+sf_account   = None
+sf_username  = None
+sf_dbname    = None
+sf_password  = None
+sf_rolename  = None
+sf_warehouse = None
+
+
+arguments = arguments_parser.parse_args()
+
+
+def readsection(configsection):
+    global sf_account
+    global sf_username
+    global sf_dbname
+    global sf_password
+    global sf_rolename
+    global sf_warehouse
+    sf_account   = configsection['accountname']   if 'accountname'   in configsection else sf_account 
+    sf_username  = configsection['username']      if 'username'      in configsection else sf_username 
+    sf_dbname    = configsection['dbname']        if 'dbname'        in configsection else sf_dbname 
+    sf_password  = configsection['password']      if 'password'      in configsection else sf_password 
+    sf_rolename  = configsection['rolename']      if 'rolename'      in configsection else sf_rolename 
+    sf_warehouse = configsection['warehousename'] if 'warehousename' in configsection else sf_warehouse 
+
+def readconfig():
+    global arguments
+    configfilename = arguments.config if arguments.config else (DEFAULT_SNOWSQL_CONFIG if os.path.exists(DEFAULT_SNOWSQL_CONFIG) else None)
+    if configfilename:
+        if not os.path.exists(configfilename):
+            print(f"Sorry, config file {configfilename} does not exist")
+            exit(EXIT_NO_CONFIG)
+        config = configparser.ConfigParser()
+        ## Config parser is not good reading comments
+        lines = open(configfilename,"r").readlines()
+        config_content = "".join([x for x in lines if not x.strip().startswith("#")])
+        buf = io.StringIO(config_content)
+        config.read_file(buf)
+        if not arguments.connection and 'connections' in config:
+            return readsection(config)
+        if arguments.connection and f'connections.{arguments.connection}' in config:
+            return readsection(config[f'connections.{arguments.connection}'])
+        print("No information was read from configfile")
+
+os.system("docker -t orellabac/snowtire ")
