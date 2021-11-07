@@ -105,7 +105,7 @@ Successfully tagged snowtire:latest
 
 ## Running the image
 ```
-docker run -p 8888:8888 --name spare-0 snowtire:latest
+docker run -e JUPYTER_TOKEN=easy -e  -p 8888:8888 --name spare-0 snowtire:latest
 ```
 If the port 8888 is already taken on your laptop, and you want to use another port, you can simply change the port mapping. For example, for port 9999, it would be:
 ```

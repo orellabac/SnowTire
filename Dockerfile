@@ -46,14 +46,18 @@ COPY ./deploy_snowflake.sh /
 RUN chmod +x /deploy_snowflake.sh
 RUN /deploy_snowflake.sh
 RUN mkdir /home/jovyan/samples
-COPY ./pyodbc.ipynb /home/jovyan/samples
+COPY ./Pyodbc.ipynb /home/jovyan/samples
 COPY ./Python.ipynb /home/jovyan/samples
-COPY ./spark.ipynb /home/jovyan/samples
+COPY ./Spark.ipynb /home/jovyan/samples
+COPY ./PySpark.ipynb /home/jovyan/samples
+COPY ./Snowpark.ipynb /home/jovyan/samples
 COPY ./SQLAlchemy.ipynb /home/jovyan/samples
 RUN chown -R jovyan:users /home/jovyan/samples
-RUN sudo -u jovyan /opt/conda/bin/jupyter trust /home/jovyan/samples/pyodbc.ipynb
+RUN sudo -u jovyan /opt/conda/bin/jupyter trust /home/jovyan/samples/Pyodbc.ipynb
 RUN sudo -u jovyan /opt/conda/bin/jupyter trust /home/jovyan/samples/Python.ipynb
-RUN sudo -u jovyan /opt/conda/bin/jupyter trust /home/jovyan/samples/spark.ipynb
+RUN sudo -u jovyan /opt/conda/bin/jupyter trust /home/jovyan/samples/Snowpark.ipynb
+RUN sudo -u jovyan /opt/conda/bin/jupyter trust /home/jovyan/samples/PySpark.ipynb
+RUN sudo -u jovyan /opt/conda/bin/jupyter trust /home/jovyan/samples/Spark.ipynb
 RUN sudo -u jovyan /opt/conda/bin/jupyter trust /home/jovyan/samples/SQLAlchemy.ipynb
 # RUN sudo -u jovyan /opt/conda/bin/jupyter contrib nbextension install --user
 # RUN sudo -u jovyan /opt/conda/bin/jupyter nbextensions_configurator enable --user
